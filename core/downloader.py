@@ -19,7 +19,7 @@ class VideoDownloader:
         ]
         
         if browser == None:
-            raise ValueError("Fuck you")
+            raise ValueError("Please provide your browser (-b chrome/firefox/etc.)")
         if browser.lower() in self.allowed_browsers:
             self.ydl_options["cookies_from_browser"] = browser
         else:
