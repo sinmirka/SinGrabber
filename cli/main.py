@@ -72,8 +72,12 @@ Type "help" or "?" help
             print(f"Extracting info from {url}")
             downloader = VideoDownloader(output_path=output, browser=browser)
             info = downloader.get_info(url=url)
-            print(f"Done: {info.get('title', 'Unknown')}")
-            print(info)
+            print(f"Done extracting info")
+            print(f"Title: {info.get('title', 'Unknown')}")
+            print(f"Author: {info.get('channel', 'Unknown')}")
+            print(f"Duration: {info.get('duration', 'Unknown')} sec")
+            print(f"Views: {info.get('view_count', 'Unknown')}")
+            print(f"Description: {info.get('description', 'N/A')[:100]}...")
         except Exception as e:
             print(f"Error: {e}")
 
