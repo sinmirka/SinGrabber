@@ -27,8 +27,20 @@ class VideoDownloader:
         else:
             raise ValueError("Browser is not allowed")
     
-    def download(self, url: str) -> dict:
+    def download(self, url: str, audio_only: bool | None) -> dict:
         self.ydl_options["progress_hooks"] = [self._progress_hook]
+        if audio_only:
+            audio_options = {
+                "extractaudio": True,        # извлечь аудио
+                "audioformat": "mp3",        # конвертить в mp3
+                "audioquality": "9",         # качество (0=лучшее, 9=худшее, 5=среднее)
+                "postprocessors": [{         # что делать после скачивания
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192"  # битрейт в кбит/с
+                }]
+            }
+            self.ydl_options.update(audio_options)
 
         with YoutubeDL(self.ydl_options) as ydl:
             info = ydl.extract_info(url, download=True)

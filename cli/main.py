@@ -2,20 +2,14 @@ import cmd
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+from colorama import init, Fore, Style
+init()
 
 from core.downloader import VideoDownloader
+from cli.intro import gradient_intro
 
 class SinGrabberShell(cmd.Cmd):
-    intro = """
-░██████╗██╗███╗░░██╗  ░██████╗░██████╗░░█████╗░██████╗░██████╗░███████╗██████╗░  ░█████╗░██╗░░░░░██╗
-██╔════╝██║████╗░██║  ██╔════╝░██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗  ██╔══██╗██║░░░░░██║
-╚█████╗░██║██╔██╗██║  ██║░░██╗░██████╔╝███████║██████╦╝██████╦╝█████╗░░██████╔╝  ██║░░╚═╝██║░░░░░██║
-░╚═══██╗██║██║╚████║  ██║░░╚██╗██╔══██╗██╔══██║██╔══██╗██╔══██╗██╔══╝░░██╔══██╗  ██║░░██╗██║░░░░░██║
-██████╔╝██║██║░╚███║  ╚██████╔╝██║░░██║██║░░██║██████╦╝██████╦╝███████╗██║░░██║  ╚█████╔╝███████╗██║
-╚═════╝░╚═╝╚═╝░░╚══╝  ░╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚═════╝░╚══════╝╚═╝░░╚═╝  ░╚════╝░╚══════╝╚═╝
-Welcome to SinGrabber CLI
-Type "help" or "?" help
-    """
+    intro = gradient_intro
 
     prompt = "singrabber> "
 
@@ -55,7 +49,22 @@ Type "help" or "?" help
         try:
             print(f"Downloading: {url}")
             downloader = VideoDownloader(output_path=output, browser=browser)
-            info = downloader.download(url=url)
+            info = downloader.download(url=url, audio_only=False)
+            print(f"Done: {info.get('title', 'Unknown')}")
+        except Exception as e:
+            print(f"Error: {e}")
+
+    def do_audio(self, arg):
+        """Download audio. Example: audio <url> [options]"""
+        result = self.parse_args(arg=arg)
+        if result is None:
+            return
+        url, output, browser = result
+
+        try:
+            print(f"Downloading audio from {url}")
+            downloader = VideoDownloader(output_path=output, browser=browser)
+            info = downloader.download(url=url, audio_only=True)
             print(f"Done: {info.get('title', 'Unknown')}")
         except Exception as e:
             print(f"Error: {e}")
@@ -73,7 +82,7 @@ Type "help" or "?" help
         """Parse video information. Example: info <url> [options]"""
         result = self.parse_args(arg=arg)
         if result is None:
-            return  # parse_args уже напечатал ошибку
+            return
         url, output, browser = result
 
         try:
