@@ -1,6 +1,18 @@
 from yt_dlp import YoutubeDL
 from pathlib import Path
 from tqdm import tqdm
+import subprocess
+
+def is_url(url):
+        result = subprocess.run(["lua", "utils/validator.lua", url], capture_output=True, text=True)
+        output = result.stdout.strip()
+
+        if output.startswith("valid:"):
+            return True
+        elif output.startswith("invalid:"):
+            reason = output.split(":", 1)[1]
+            print(f"URL is invalid: {reason}")
+            return False
 
 class VideoDownloader:
     def __init__(self, output_path: str = "downloads", browser: str | None = None):
@@ -27,11 +39,14 @@ class VideoDownloader:
             self.ydl_options["cookies_from_browser"] = browser
         else:
             raise ValueError("Browser is not allowed")
-    
+
     def download(self, url: str, audio_only: bool | None) -> dict:
         self.ydl_options["progress_hooks"] = [self._progress_hook]
         self.ydl_options["remote_components"] = ["ejs:github"]
         self.ydl_options["no_check_certificate"] = True
+        if not is_url(url):
+            return
+
         if audio_only:
             audio_options = {
                 "extractaudio": True,        # извлечь аудио
@@ -50,6 +65,9 @@ class VideoDownloader:
             return info
     
     def get_info(url: str) -> dict:
+        if not is_url(url):
+            return
+        
         ydl_options = {
             "quiet": True
         }
