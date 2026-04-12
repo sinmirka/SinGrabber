@@ -29,3 +29,8 @@ class VideoDownloader:
         with YoutubeDL(self.ydl_options) as ydl:
             info = ydl.extract_info(url, download=True)
             return info
+    
+    def get_info(self, url: str) -> dict:
+        with YoutubeDL(self.ydl_options) as ydl:
+            info = ydl.extract_info(url=url, download=False)
+            return info
