@@ -20,6 +20,8 @@ Type "help" or "?" help
     prompt = "singrabber> "
 
     def parse_args(self, arg) -> str: # returns url, output, browser
+        if arg == None:
+            return
         parts = arg.split()
         if not parts:
             print("Error: provide URL")
@@ -45,7 +47,10 @@ Type "help" or "?" help
 
     def do_download(self, arg):
         """Download video. Example: download <url> [options]"""
-        url, output, browser = self.parse_args(arg=arg)
+        result = self.parse_args(arg=arg)
+        if result is None:
+            return
+        url, output, browser = result
 
         try:
             print(f"Downloading: {url}")
@@ -66,12 +71,14 @@ Type "help" or "?" help
 
     def do_info(self, arg):
         """Parse video information. Example: info <url> [options]"""
-        url, output, browser = self.parse_args(arg=arg)
+        result = self.parse_args(arg=arg)
+        if result is None:
+            return  # parse_args уже напечатал ошибку
+        url, output, browser = result
 
         try:
             print(f"Extracting info from {url}")
-            downloader = VideoDownloader(output_path=output, browser=browser)
-            info = downloader.get_info(url=url)
+            info = VideoDownloader.get_info(url=url)
             print(f"Done extracting info")
             print(f"Title: {info.get('title', 'Unknown')}")
             print(f"Author: {info.get('channel', 'Unknown')}")
