@@ -9,6 +9,7 @@ class VideoDownloader:
         self.ydl_options = {
             "output_template": f"{output_path}/%(title)s.%(ext)s",
             "quiet": True,
+            "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
         }
         self.allowed_browsers = [
             'chrome',
@@ -29,6 +30,8 @@ class VideoDownloader:
     
     def download(self, url: str, audio_only: bool | None) -> dict:
         self.ydl_options["progress_hooks"] = [self._progress_hook]
+        self.ydl_options["remote_components"] = ["ejs:github"]
+        self.ydl_options["no_check_certificate"] = True
         if audio_only:
             audio_options = {
                 "extractaudio": True,        # извлечь аудио
