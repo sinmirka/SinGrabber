@@ -1,18 +1,14 @@
 from yt_dlp import YoutubeDL
 from pathlib import Path
 from tqdm import tqdm
-import subprocess
+import re
 
 def is_url(url):
-        result = subprocess.run(["lua", "utils/validator.lua", url], capture_output=True, text=True)
-        output = result.stdout.strip()
-
-        if output.startswith("valid:"):
-            return True
-        elif output.startswith("invalid:"):
-            reason = output.split(":", 1)[1]
-            print(f"URL is invalid: {reason}")
-            return False
+    pattern = r'^https://[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}'
+    if not re.match(pattern, url):
+        print("URL is invalid: URL must start with 'https://' and contain valid domain")
+        return False
+    return True
 
 class VideoDownloader:
     def __init__(self, output_path: str = "downloads", browser: str | None = None):
@@ -49,13 +45,13 @@ class VideoDownloader:
 
         if audio_only:
             audio_options = {
-                "extractaudio": True,        # извлечь аудио
-                "audioformat": "mp3",        # конвертить в mp3
-                "audioquality": "9",         # качество (0=лучшее, 9=худшее, 5=среднее)
-                "postprocessors": [{         # что делать после скачивания
+                "extract_audio": True,
+                "audioformat": "mp3",
+                "audioquality": "9",
+                "postprocessors": [{
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
-                    "preferredquality": "192"  # битрейт в кбит/с
+                    "preferredquality": "192"
                 }]
             }
             self.ydl_options.update(audio_options)
