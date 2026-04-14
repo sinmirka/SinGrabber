@@ -2,6 +2,7 @@ import cmd
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from colorama import init, Fore, Style
 init()
 
@@ -11,9 +12,10 @@ from cli.intro import gradient_intro
 class SinGrabberShell(cmd.Cmd):
     intro = gradient_intro
 
-    prompt = "singrabber> "
+    prompt_color = (252, 92, 125)
+    prompt = f"\033[38;2;{prompt_color[0]};{prompt_color[1]};{prompt_color[2]}msingrabber> " + Style.RESET_ALL
 
-    def parse_args(self, arg) -> str: # returns url, output, browser
+    def parse_args(self, arg) -> tuple: # returns url, output, browser
         if arg == None:
             return
         parts = arg.split()
