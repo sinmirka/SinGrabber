@@ -15,6 +15,7 @@ class VideoDownloader:
             "format": self._get_format(quality),
             "remote_components": ["ejs:github"],
             "no_check_certificate": True,
+            "js_runtime": ["deno"],
         }
         self.allowed_browsers = [
             'chrome',
